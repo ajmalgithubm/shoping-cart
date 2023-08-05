@@ -1,14 +1,14 @@
 <section>
     <div class="container mt-5">
-        <form>
+        <form action="/admin/add-product" enctype="multipart/form-data" method="post">
             <div class="form-group">
                 <label for="exampleInputEmail1">Name</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
-                    placeholder="Enter product ">
+                <input type="text" class="form-control" id="exampleInputEmail1"
+                    placeholder="Enter product" name="productname">
             </div>
             <div class="form-group">
                 <label for="exampleFormControlFile1">Image</label>
-                <input type="file" class="form-control-file" id="exampleFormControlFile1">
+                <input type="file" class="form-control-file" id="exampleFormControlFile1" name="productimg">
             </div>
             <button type="submit" class="btn btn-success">Submit</button>
         </form>
