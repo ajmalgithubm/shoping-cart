@@ -1,13 +1,26 @@
 const connection = require('../config/connection');
-
+const collection = require('../collection')
 module.exports = {
     addProduct: (product, done) => {
         connection.connect((db) => {
             if (db) {
-                db.collection('product').insertOne(product).then((doc) =>{
+                db.collection(collection.PRODUCT_COLLECTION).insertOne(product).then((doc) =>{
                     done(doc)
                 })
             }else{
+                done(false)
+            }
+        })
+    },
+    getAllProduct:(done) => {
+        connection.connect((db) => {
+            if (db) {
+                db.collection(collection.PRODUCT_COLLECTION).find().toArray().then((doc) => {
+                    done(doc)
+                }).catch(err=> {
+                    done(false)
+                })
+            } else {
                 done(false)
             }
         })
