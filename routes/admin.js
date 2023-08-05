@@ -22,7 +22,14 @@ router.get('/add-product', (req, res) => {
 router.post('/add-product', (req, res) => {
     productHelpers.addProduct(req.body, (result) => {
         if(result){
-            res.send("Product added SuccessFully")
+            const id = result.insertedId.toString();
+            req.files.image.mv('./public/productImages/'+id+'.jpg', (err, done) => {
+                if(!err){
+                    res.send('data added successfully')
+                }else{
+                    console.log("error occur when image storing");
+                }
+            })
         }else{
             console.log("Some error occur when insert product into database");
         }

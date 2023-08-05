@@ -1,0 +1,15 @@
+const connection = require('../config/connection');
+
+module.exports = {
+    addProduct: (product, done) => {
+        connection.connect((db) => {
+            if (db) {
+                db.collection('product').insertOne(product).then((doc) =>{
+                    done(doc)
+                })
+            }else{
+                done(false)
+            }
+        })
+    }
+}

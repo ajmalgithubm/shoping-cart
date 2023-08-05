@@ -26,13 +26,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(fileUploader())
-connection.connect((result) => {
-  if(result){
-    console.log("Connected SuccessFully..");
-  }else{
-    console.log("Connection Error");
-  }
-})
 app.use('/', usersRouter);
 app.use('/admin', adminRouter); 
 console.log("app js file is called");
