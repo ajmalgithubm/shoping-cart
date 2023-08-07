@@ -1,5 +1,6 @@
 const connection = require('../config/connection');
-const collection = require('../collection')
+const collection = require('../collection');
+const { ObjectId } = require('mongodb')
 module.exports = {
     addProduct: (product, done) => {
         connection.connect((db) => {
@@ -22,6 +23,21 @@ module.exports = {
                 })
             } else {
                 done(false)
+            }
+        })
+    },
+    deleteProduct:(productId, callback)=>{
+        connection.connect((db) => {
+            if(db){
+                db.collection(collection.PRODUCT_COLLECTION).deleteOne({ _id: ObjectId(id) }).then((doc) => {
+                    console.log(doc);
+                    callback(true)
+                }).catch((err) => {
+                    console.log('error when delte ocjcet from the database', err);
+                    callback(false)
+                })
+            }else{
+                callback(false)
             }
         })
     }

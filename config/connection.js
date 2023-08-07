@@ -9,7 +9,7 @@ function connect(done){
         const db = client.db(databaseName);
         done(db)
     }).catch(err => {
-        console.log("error when connecting");
+        console.log("error when connecting",err);
         done(false)
     })
         

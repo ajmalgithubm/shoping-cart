@@ -3,11 +3,22 @@ const router = express.Router();
 const productHelpers = require('../helpers/productHelpers')
 const userhelpers = require('../helpers/userhelpers');
 
+
+function userLogedIn(req, res, next){
+    if (req.session.status){
+        next()
+    }else{
+        res.redirect('/login')
+    }
+}
+
+
+
 router.get('/', (req,res) => {
 
     const status = req.session.status;
     const userName = req.session.userName;
-    productHelpers.getAllProduct((products) => {
+    productHelpers.getAllProduct((products) => { 
         if (products) {
             res.render('user/products', {  title: "Shopping cart", products, status, userName});
         } else {
@@ -24,6 +35,7 @@ router.get('/login', (req, res) => {
         req.session.loginError = false
     }
 })
+
 
 router.get('/signup', (req, res) => {
     if(req.session.status){
@@ -59,6 +71,13 @@ router.post('/signup', (req, res) => {
             res.redirect('/signup')
         }
     })
+})
+
+
+router.get('/cart', userLogedIn, (req, res) => {
+    const status = req.session.status
+    const userName = req.session.userName
+    res.render('user/cart', { title: "Shopping cart" , status, userName});
 })
 
 
