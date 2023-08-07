@@ -43,6 +43,32 @@ router.post('/add-product', (req, res) => {
     })
 })
 
+router.get('/edit-product/:id', (req, res) =>{
+    const id = req.params.id
+    productHelpers.getProductDetails(id, (product) => {
+        if(product){
+            console.log(product);
+            res.render('admin/edit-product', { admin: true, title: 'admin panel', product })
+        }else{
+            res.send("Error")
+        }
+    })
+})
+
+router.post('/edit-product/:id', (req, res) => {
+    productHelpers.updateProduct(req.params.id, req.body, (result) => {
+        if(result){
+            res.redirect('/admin')
+            if(req.files.image){
+                req.files.image.mv('./public/images/' + req.params.id + '.jpg')
+            }
+        }else{
+            res.send("error")
+        }
+    })
+    
+})
+
 router.get('/delete-product/:id', (req, res) => {
     const id = req.params.id
     productHelpers.deleteProduct(id, (result) => {

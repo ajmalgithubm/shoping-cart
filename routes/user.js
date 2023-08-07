@@ -38,11 +38,7 @@ router.get('/login', (req, res) => {
 
 
 router.get('/signup', (req, res) => {
-    if(req.session.status){
-        res.redirect('/')
-    }else{
         res.render('user/signup')
-    }
 })
 
 router.post('/login', (req, res) => {
@@ -50,6 +46,7 @@ router.post('/login', (req, res) => {
         if(result){
             req.session.userName = result.fname+' '+result.lname;
             req.session.status = true;
+            req.session.user = result
             res.redirect('/')
         }else{
             req.session.loginError = true
@@ -61,14 +58,34 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login')
-})
+}) 
 
 router.post('/signup', (req, res) => {
     userhelpers.doSignup(req.body, (result) => {
         if (result) {
-            res.redirect('/login')
+            userhelpers.getUserDetails(result.insertedId.toString(), (result) => {
+                if(result){
+                    req.session.status = true
+                    req.session.userName = result.fname+' '+result.lname
+                    req.session.user = result
+                    res.redirect('/')
+                }else{
+                    res.redirect('/signup')
+                }
+            })
+            
         } else {
             res.redirect('/signup')
+        }
+    })
+})
+
+router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
+    userhelpers.addTocart(req.params.id, req.session.user._id, (result) =>{
+        if(result){
+            res.redirect('/')
+        }else{
+            res.send("error occur")
         }
     })
 })
@@ -77,7 +94,16 @@ router.post('/signup', (req, res) => {
 router.get('/cart', userLogedIn, (req, res) => {
     const status = req.session.status
     const userName = req.session.userName
-    res.render('user/cart', { title: "Shopping cart" , status, userName});
+    const userId = req.session.user._id
+    userhelpers.getCartItems(userId, (result) =>{
+        if(result){
+            console.log(result);
+            res.render('user/cart', { title: "Shopping cart", status, userName});
+        }else{
+            res.send("error occur")
+        }
+    })
+   
 })
 
 

@@ -3,13 +3,13 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var hbs  = require('express-handlebars');
+var hbs = require('express-handlebars');
 var usersRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
 var fileUploader = require('express-fileupload');
 var session = require('express-session');
 var app = express();
- 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
@@ -26,18 +26,21 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(fileUploader())
-app.use(session({secret:'key', cookie:{maxAge:20000000}}))
+app.use(session({
+  secret: 'key', resave: false,
+  saveUninitialized: true, cookie: { maxAge: 20000000 }
+}))
 
 app.use('/', usersRouter);
-app.use('/admin', adminRouter); 
+app.use('/admin', adminRouter);
 console.log("app js file is called");
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404)); 
-}); 
+app.use(function (req, res, next) {
+  next(createError(404));
+});
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

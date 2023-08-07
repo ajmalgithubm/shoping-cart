@@ -1,0 +1,22 @@
+<section>
+    <div class="container mt-5">
+        <form action="/admin/edit-product/{{product._id}}" enctype="multipart/form-data" method="post">
+            <div class="form-group">
+                <label for="exampleInputEmail1">Name</label>
+                <input type="text" class="form-control" value="{{product.name}}" id="exampleInputEmail1" placeholder="Enter product" name="name">
+            </div>
+            <div class="form-group">
+                <img src="/images/{{product._id}}.jpg" style="width:100px;height:100px" id="image">
+                <input  type="file" onchange="imageView(event)" class="form-control-file" id="exampleFormControlFile1" name="image">
+            </div>
+            <button type="submit" class="btn btn-primary">Edit</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    function imageView(event){
+        const imageShow = document.getElementById('image');
+        imageShow.src = URL.createObjectURL(event.target.files[0]);
+    }
+</script>
