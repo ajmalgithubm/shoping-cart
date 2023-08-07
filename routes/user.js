@@ -1,15 +1,65 @@
 const express = require('express')
 const router = express.Router();
-const products = [
-    { name: 'Samsung', image:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm_3hRPHJHkB-0At9kFInSWPiH1zusqbkjX9F2GzRexRokVboC4hiRQNI0XAXc3umb6x4&usqp=CAU'},
-    { name: 'Ralme', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfYhz956tW3eRjph34xnmOD2sxiy1-bB33Sg&usqp=CAU' },
-    { name: 'Oppo', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUwSWaz1NYBViVEhqAnyoAK6P3ijTnOCAX2Q&usqp=CAU' },
-    { name: 'Iphone', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSe4LhkEVth4qzxUPYxd0GCeTkO0ZDJtT8Iug&usqp=CAU' }
-]
-
+const productHelpers = require('../helpers/productHelpers')
+const userhelpers = require('../helpers/userhelpers');
 
 router.get('/', (req,res) => {
-    res.render('user/products', {admin:false, title:'shoping cart', products})
+
+    const status = req.session.status;
+    const userName = req.session.userName;
+    productHelpers.getAllProduct((products) => {
+        if (products) {
+            res.render('user/products', {  title: "Shopping cart", products, status, userName});
+        } else {
+            res.send("<h1>Error Occur</h1>")
+        }
+    })
 })
+
+router.get('/login', (req, res) => {
+    if(req.session.status){
+        res.redirect('/')
+    }else{
+        res.render('user/login',{error:req.session.loginError})
+        req.session.loginError = false
+    }
+})
+
+router.get('/signup', (req, res) => {
+    if(req.session.status){
+        res.redirect('/')
+    }else{
+        res.render('user/signup')
+    }
+})
+
+router.post('/login', (req, res) => {
+    userhelpers.doLogin(req.body, (result) => {
+        if(result){
+            req.session.userName = result.fname+' '+result.lname;
+            req.session.status = true;
+            res.redirect('/')
+        }else{
+            req.session.loginError = true
+            res.redirect('/login')
+        }
+    })
+})
+
+router.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/login')
+})
+
+router.post('/signup', (req, res) => {
+    userhelpers.doSignup(req.body, (result) => {
+        if (result) {
+            res.redirect('/login')
+        } else {
+            res.redirect('/signup')
+        }
+    })
+})
+
 
 module.exports = router

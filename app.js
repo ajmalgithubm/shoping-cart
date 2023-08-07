@@ -7,7 +7,7 @@ var hbs  = require('express-handlebars');
 var usersRouter = require('./routes/user');
 var adminRouter = require('./routes/admin');
 var fileUploader = require('express-fileupload');
-const connection = require('./config/connection')
+var session = require('express-session');
 var app = express();
  
 // view engine setup
@@ -26,6 +26,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(fileUploader())
+app.use(session({secret:'key', cookie:{maxAge:20000000}}))
+
 app.use('/', usersRouter);
 app.use('/admin', adminRouter); 
 console.log("app js file is called");

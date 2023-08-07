@@ -30,15 +30,9 @@ router.post('/add-product', (req, res) => {
     productHelpers.addProduct(req.body, (result) => {
         if(result){
             const id = result.insertedId.toString();
-            req.files.image.mv('./public/productImages/'+id+'.jpg', (err, done) => {
+            req.files.image.mv('./public/images/'+id+'.jpg', (err, done) => {
                 if(!err){
-                    productHelpers.getAllProduct((products) => {
-                        if (products) {
-                            res.render('admin/view-product', { admin: true, title: "admin panel", products })
-                        } else {
-                            console.log("error occur when fetching data")
-                        }
-                    })
+                    res.redirect('/admin')
                 }else{
                     console.log("error occur when image storing");
                 }

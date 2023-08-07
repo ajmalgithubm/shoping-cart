@@ -1,0 +1,22 @@
+<section style="padding:100px;background-color:rgb(167, 164, 162); height:91vh">
+    <form style="min-width:100px" action="/login" method="post">
+    {{#if error}}
+    <div class="alert alert-danger" role="alert">
+        Invalid Username and password
+    </div>
+    {{/if}}
+        <div class="form-group">
+            <label for="exampleInputEmail1">Email address</label>
+            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                placeholder="Enter email" name="email">
+            <div class="form-group mt-4">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password"
+                    name="password">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+            <div style="text-align: center;padding-top:1rem">
+                <a href="/signup" style="color: black;">create new account</a>
+            </div>
+    </form>
+</section>
