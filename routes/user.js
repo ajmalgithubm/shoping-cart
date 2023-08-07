@@ -98,7 +98,7 @@ router.get('/cart', userLogedIn, (req, res) => {
     userhelpers.getCartItems(userId, (result) =>{
         if(result){
             console.log(result);
-            res.render('user/cart', { title: "Shopping cart", status, userName});
+            res.render('user/cart', { title: "Shopping cart", status, userName, productList: result.productList });
         }else{
             res.send("error occur")
         }
