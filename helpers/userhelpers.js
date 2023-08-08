@@ -138,5 +138,29 @@ module.exports = {
                 })
             })
         })
+    },
+    getCartItems:(userId) => {
+        return new Promise(async (resolve, reject) => {
+            connection.connect(client => {
+                const aggregatePipeline = [
+                    {
+                        $match:{
+                            userId:userId
+                        }
+                    },{
+                        $unwind:'$productList'
+                    },{
+                        $lookup:{
+                            from:'product',
+                            localField:'proId',
+                            foreignField:'_id',
+                            as:'productList'
+                        }
+                    }
+                ]
+                const doc = client.db(database.databaseName).collection(collection.CART_COLLECTION).aggregate(aggregatePipeline).toArray();
+                resolve(doc)
+            })
+        })
     }
 }

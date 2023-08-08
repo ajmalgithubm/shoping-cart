@@ -94,7 +94,12 @@ router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
 router.get('/cart', userLogedIn, (req, res) => {
     const status = req.session.status
     const userName = req.session.userName
-    const userId = req.session.user._id
+    const userId = req.session.user
+    // res.render('user/cart', {status, userName, userId})
+    userhelpers.getCartItems(req.session.user._id).then((response) => {
+        console.log(response);
+        res.send('happy')
+    })ommit
     
    
 })
