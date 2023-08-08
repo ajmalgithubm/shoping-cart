@@ -57,60 +57,86 @@ module.exports = {
             }
         })
     },
-    addTocart: (proId, userId, callback) => {
-        connection.connect(client => {
-            if (client) {
-                client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId }).then((doc) => {
-                    if (doc) {
-                        client.db(database.databaseName).collection(collection.CART_COLLECTION).updateOne({ userId: userId }, {
-                            $push: {
-                                productList: proId
+    addToCart: (userId, proId) => {
+        return new Promise((resolve, reject) => {
+            connection.connect(client => {
+                client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId }).then((user) => {
+                    if (user) {
+                        // if user is exist
+                        const productArray = user.productList;
+                        let productExist = false
+                        for (let product of productArray) {
+                            if (product.proId === proId) {
+                                productExist = true;
+                                break;
                             }
-                        }).then((doc) => {
-                            // successs pushed product into database
-                            callback(doc)
-                            client.close()
-                        }).catch(err => {
-                            console.log("eerror when product is pushing into database", err)
-                            callback(false)
-                            client.close()
-                        })
+                        }
+                        if (productExist) {
+                            /* product already exist*/
+                            connection.connect(client => {
+                                client.db(database.databaseName).collection(collection.CART_COLLECTION)
+                                    .updateOne({
+                                        userId: userId
+                                    }, {
+                                        $inc: {
+                                            'productList.$[outer].quantity': 1
+                                        }
+                                    }, {
+                                        arrayFilters: [
+                                            { 'outer.proId': proId }
+                                        ]
+                                    }).then((doc) => {
+                                        resolve(doc)
+                                        client.close()
+                                    }).catch(err => {
+                                        reject(err)
+                                    })
+                            })
+                        } else {
+                            /* this product does notexist but user is already exist */
+                            const productArray = {
+                                proId: proId,
+                                quantity: 1
+                            }
+                            connection.connect(client => {
+                                client.db(database.databaseName).collection(collection.CART_COLLECTION)
+                                    .updateOne(
+                                        {
+                                            userId: userId
+                                        }, {
+                                        $push: {
+                                            'productList': productArray
+                                        }
+                                    }
+                                    ).then(doc => {
+                                        resolve(doc)
+                                        client.close()
+                                    }).catch(err => {
+                                        reject(err)
+                                    })
+                            })
+                        }
                     } else {
-                        const productList = []
-                        productList.push(proId)
-                        client.db(database.databaseName).collection(collection.CART_COLLECTION).insertOne({ userId: userId, productList: productList }).then((doc) => {
-                            // new usercart is added
-                            callback(doc)
-                            client.close()
-                        }).catch(err => {
-                            // error when ne w usercart is adding
-                            callback(false)
-                            console.log('error when new usercart is creatind', err);
-                            client.close()
+                        const proObj = {
+                            proId: proId,
+                            quantity: 1
+                        }
+                        const documentObj = {
+                            userId: userId,
+                            productList: [proObj]
+                        }
+                        connection.connect(client => {
+                            client.db(database.databaseName).collection(collection.CART_COLLECTION)
+                                .insertOne(documentObj).then((doc) => {
+                                    resolve(doc)
+                                    client.close()
+                                }).catch(err => {
+                                    reject(err)
+                                })
                         })
                     }
-                }).catch(err => {
-                    callback(false)
                 })
-            } else {
-                // error
-                callback(false)
-
-            }
-        })
-    },
-    getCartItems:(userId, callback)=>{
-        connection.connect(client => {
-            if(client){
-                client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId }).then((doc) => {
-                    callback(doc)
-                }).catch(err => {
-                    console.log('error occur when retriving data', err);
-                    callback(false)
-                })
-            }else{
-                callback(false)
-            }
+            })
         })
     }
 }

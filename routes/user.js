@@ -81,12 +81,12 @@ router.post('/signup', (req, res) => {
 })
 
 router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
-    userhelpers.addTocart(req.params.id, req.session.user._id, (result) =>{
-        if(result){
-            res.redirect('/')
-        }else{
-            res.send("error occur")
-        }
+    const userId = req.session.user._id
+    const proId = req.params.id
+    userhelpers.addToCart(userId, proId).then((result) => {
+        res.redirect('/')
+    }).catch(err => {
+        res.send(err)
     })
 })
 
@@ -95,14 +95,7 @@ router.get('/cart', userLogedIn, (req, res) => {
     const status = req.session.status
     const userName = req.session.userName
     const userId = req.session.user._id
-    userhelpers.getCartItems(userId, (result) =>{
-        if(result){
-            console.log(result);
-            res.render('user/cart', { title: "Shopping cart", status, userName, productList: result.productList });
-        }else{
-            res.send("error occur")
-        }
-    })
+    
    
 })
 
