@@ -15,13 +15,17 @@ function userLogedIn(req, res, next){
 
 
 
-router.get('/', (req,res) => {
+router.get('/', async (req,res) => {
 
     const status = req.session.status;
     const userName = req.session.userName;
+    var totalQuantity = null
+    if(status){
+       totalQuantity = await userhelpers.getTotalQuantity(req.session.user._id);
+    }
     productHelpers.getAllProduct((products) => { 
         if (products) {
-            res.render('user/products', {  title: "Shopping cart", products, status, userName});
+            res.render('user/products', {  title: "Shopping cart", products, status, userName, totalQuantity});
         } else {
             res.send("<h1>Error Occur</h1>")
         }
