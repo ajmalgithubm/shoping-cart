@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const productHelpers = require('../helpers/productHelpers')
 const userhelpers = require('../helpers/userhelpers');
+const { ObjectId } = require('mongodb');
 
 
 function userLogedIn(req, res, next){
@@ -73,7 +74,7 @@ router.post('/signup', (req, res) => {
                     res.redirect('/signup')
                 }
             })
-            
+             
         } else {
             res.redirect('/signup')
         }
@@ -82,8 +83,11 @@ router.post('/signup', (req, res) => {
 
 router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
     const userId = req.session.user._id
-    const proId = req.params.id
+    const proId =new ObjectId(req.params.id)
+    console.log(proId);
+    console.log(userId);
     userhelpers.addToCart(userId, proId).then((result) => {
+        console.log(result)
         res.redirect('/')
     }).catch(err => {
         res.send(err)
@@ -96,10 +100,15 @@ router.get('/cart', userLogedIn, (req, res) => {
     const userName = req.session.userName
     const userId = req.session.user
     // res.render('user/cart', {status, userName, userId})
-    userhelpers.getCartItems(req.session.user._id).then((response) => {
-        console.log(response);
-        res.send('happy')
-    })ommit
+    userhelpers.getCartItems(req.session.user._id).then((productArray) => {
+        console.log(productArray);
+        res.render('user/cart', {
+            status,
+            userName,
+            userId,
+            productArray
+        })
+    })
     
    
 })

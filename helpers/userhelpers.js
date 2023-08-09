@@ -66,7 +66,7 @@ module.exports = {
                         const productArray = user.productList;
                         let productExist = false
                         for (let product of productArray) {
-                            if (product.proId === proId) {
+                            if (product.proId.equals(proId)) {
                                 productExist = true;
                                 break;
                             }
@@ -86,7 +86,7 @@ module.exports = {
                                             { 'outer.proId': proId }
                                         ]
                                     }).then((doc) => {
-                                        resolve(doc)
+                                        resolve("product exist but user and user exist")
                                         client.close()
                                     }).catch(err => {
                                         reject(err)
@@ -109,7 +109,7 @@ module.exports = {
                                         }
                                     }
                                     ).then(doc => {
-                                        resolve(doc)
+                                        resolve('user exist but product does not exist')
                                         client.close()
                                     }).catch(err => {
                                         reject(err)
@@ -128,7 +128,7 @@ module.exports = {
                         connection.connect(client => {
                             client.db(database.databaseName).collection(collection.CART_COLLECTION)
                                 .insertOne(documentObj).then((doc) => {
-                                    resolve(doc)
+                                    resolve("user doesnot exist")
                                     client.close()
                                 }).catch(err => {
                                     reject(err)
@@ -141,24 +141,46 @@ module.exports = {
     },
     getCartItems:(userId) => {
         return new Promise(async (resolve, reject) => {
-            connection.connect(client => {
+            connection.connect(async client => {
                 const aggregatePipeline = [
                     {
-                        $match:{
-                            userId:userId
+                        $match: {
+                            userId: userId
                         }
-                    },{
-                        $unwind:'$productList'
-                    },{
-                        $lookup:{
-                            from:'product',
-                            localField:'proId',
-                            foreignField:'_id',
-                            as:'productList'
+                    }, {
+                        $unwind: '$productList'
+                    }, {
+                        $set: {
+                            quantity: '$productList.quantity',
+                            proId: '$productList.proId'
+                        }
+                    }, {
+                        $project: {
+
+                            productList: 0,
+
+                        }
+                    }, {
+                        $lookup: {
+                            from: 'product',
+                            localField: 'proId',
+                            foreignField: '_id',
+                            as: 'productDetails'
+                        }
+                    }, {
+                        $unwind: '$productDetails'
+                    }, {
+                        $set: {
+                            name: '$productDetails.name'
+                        }
+                    }, {
+                        $project: {
+                            productDetails: 0
                         }
                     }
-                ]
-                const doc = client.db(database.databaseName).collection(collection.CART_COLLECTION).aggregate(aggregatePipeline).toArray();
+                ];
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).aggregate(aggregatePipeline).toArray();
+                client.close()
                 resolve(doc)
             })
         })

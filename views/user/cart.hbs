@@ -10,18 +10,17 @@
                                     class="fas fa-angle-down mt-1"></i></a></p>
                     </div>
                 </div>
-
+                {{#each productArray}}
                 <div class="card rounded-3 mb-4">
                     <div class="card-body p-4">
                         <div class="row d-flex justify-content-between align-items-center">
                             <div class="col-md-2 col-lg-2 col-xl-2">
-                                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
-                                    class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                <img src="/images/{{this.proId}}.jpg"
+                                    class="img-fluid rounded-3" alt="">
                             </div>
                             <div class="col-md-3 col-lg-3 col-xl-3">
-                                <p class="lead fw-normal mb-2">Basic T-shirt</p>
-                                <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey
-                                </p>
+                                <p class="mb-2 text-bold" style="font-size: 20px;">{{this.name}}</p>
+                                
                             </div>
                             <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                                 <button class="btn btn-link px-2"
@@ -29,7 +28,7 @@
                                     <i class="fas fa-minus"></i>
                                 </button>
 
-                                <input id="form1" min="0" name="quantity" value="2" type="number"
+                                <input id="form1" min="0" name="quantity" value="{{this.quantity}}" type="number"
                                     class="form-control form-control-sm" />
 
                                 <button class="btn btn-link px-2"
@@ -46,6 +45,7 @@
                         </div>
                     </div>
                 </div>
+                {{/each}}
 
                
 
