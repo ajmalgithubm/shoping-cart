@@ -19,9 +19,9 @@ router.get('/', async (req,res) => {
 
     const status = req.session.status;
     const userName = req.session.userName;
-    var totalQuantity = null
+    var totalQuantity = null;
     if(status){
-       totalQuantity = await userhelpers.getTotalQuantity(req.session.user._id);
+        totalQuantity = await userhelpers.getTotalProduct(req.session.user._id)
     }
     productHelpers.getAllProduct((products) => { 
         if (products) {

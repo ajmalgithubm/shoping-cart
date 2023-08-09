@@ -198,5 +198,17 @@ module.exports = {
                 resolve(totalQuantity)
             })
         })
+    },
+    getTotalProduct:(userId)=>{
+        return new Promise((resolve, reject) => {
+            connection.connect(async client =>{
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({userId:userId});
+                if(doc){
+                    resolve(doc.productList.length)
+                }else{
+                    resolve(null)
+                }
+            })
+        })
     }
 }
