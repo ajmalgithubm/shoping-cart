@@ -171,11 +171,24 @@ module.exports = {
                         $unwind: '$productDetails'
                     }, {
                         $set: {
-                            name: '$productDetails.name'
+                            name: '$productDetails.name',
+                            price:'$productDetails.price'
                         }
                     }, {
                         $project: {
                             productDetails: 0
+                        }
+                    },{
+                        $set:{
+                            price:{
+                                $toInt:'$price'
+                            }
+                        }
+                    },{
+                        $set:{
+                            totalPrice:{
+                                $multiply:['$price', '$quantity']
+                            }
                         }
                     }
                 ];
