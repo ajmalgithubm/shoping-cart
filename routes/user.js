@@ -117,5 +117,9 @@ router.get('/cart', userLogedIn, (req, res) => {
    
 })
 
+router.get('/delete-cart-product', (req, res) => {
+    res.send('Product is deleted')
+})
+
 
 module.exports = router
