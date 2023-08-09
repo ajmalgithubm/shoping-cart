@@ -210,5 +210,22 @@ module.exports = {
                 }
             })
         })
+    },
+    deleteCartItem:(userId, proId)=>{
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).updateOne({
+                    userId: userId
+                }, {
+                    $pull: {
+                        productList: {
+                            'proId': new ObjectId(proId)
+                        }
+                    }
+                });
+                resolve(doc)
+
+            })
+        })
     }
 }

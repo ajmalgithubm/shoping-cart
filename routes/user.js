@@ -117,8 +117,13 @@ router.get('/cart', userLogedIn, (req, res) => {
    
 })
 
-router.get('/delete-cart-product', (req, res) => {
-    res.send('Product is deleted')
+router.get('/delete-cart-product/:id',async (req, res) => {
+    const result = await userhelpers.deleteCartItem(req.session.user._id, req.params.id)
+    if(result){
+        res.redirect('/cart')
+    }else{
+        res.redirect('/')
+    }
 })
 
 
