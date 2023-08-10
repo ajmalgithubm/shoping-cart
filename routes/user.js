@@ -134,7 +134,9 @@ router.post('/change-quantity',async (req, res) => {
     const result = await userhelpers.changeProductQuantity(req.session.user._id, new ObjectId(req.body.proId), parseInt(req.body.count), parseInt(req.body.currentCount));
     const totalPrice = await userhelpers.totalProductPrice(req.session.user._id, new ObjectId(req.body.proId))
     const productQuantity = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
-    res.json({totalPrice:totalPrice, quantity:productQuantity[0].quantity })
+    const totalCartAmount = await userhelpers.totalCartAmount(req.session.user._id);
+    console.log(totalCartAmount);
+    res.json({totalPrice:totalPrice, quantity:productQuantity[0].quantity , totalCartAmount:totalCartAmount})
     // if(result.productBecomeZero){
     //     console.log("product become zero is called");
     //     res.json({quantity:1, productNonZero:true, totalPrice:doc})

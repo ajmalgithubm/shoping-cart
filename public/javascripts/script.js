@@ -41,19 +41,24 @@ function changeProductQuantity(proId, count) {
             if (response.quantity == 1) {
                 $(`#increment${proId}`).hide();
                 $(`#${proId}`).val(response.quantity);
-                $(`#totalPrice${proId}`).html('$'+response.totalPrice);
-
+                $(`#totalPrice${proId}`).html('$' + formatNumber(response.totalPrice));
+                $('#totalCartPrice').html(formatNumber(response.totalCartAmount))
                 //totalPrice
                 console.log(response.totalPrice);
             } else {
                 $(`#increment${proId}`).show();
                 $(`#${proId}`).val(response.quantity);
-                $(`#totalPrice${proId}`).html('$'+response.totalPrice);
+                $(`#totalPrice${proId}`).html('$' + formatNumber(response.totalPrice));
+                $('#totalCartPrice').html(formatNumber(response.totalCartAmount))
                 console.log(response.totalPrice);
             }
 
         }
     })
+}
+
+function formatNumber(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 
