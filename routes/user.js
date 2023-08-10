@@ -86,13 +86,15 @@ router.post('/signup', (req, res) => {
 })
 
 router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
+    console.log("api call");
     const userId = req.session.user._id
     const proId =new ObjectId(req.params.id)
     console.log(proId);
     console.log(userId);
     userhelpers.addToCart(userId, proId).then((result) => {
-        console.log(result)
-        res.redirect('/')
+        userhelpers.getTotalProduct(userId).then((quantity) =>{
+            res.json(quantity)
+        })
     }).catch(err => {
         res.send(err)
     })

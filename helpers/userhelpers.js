@@ -86,7 +86,7 @@ module.exports = {
                                             { 'outer.proId': proId }
                                         ]
                                     }).then((doc) => {
-                                        resolve("product exist but user and user exist")
+                                        resolve(doc)
                                         client.close()
                                     }).catch(err => {
                                         reject(err)
@@ -109,7 +109,7 @@ module.exports = {
                                         }
                                     }
                                     ).then(doc => {
-                                        resolve('user exist but product does not exist')
+                                        resolve(doc)
                                         client.close()
                                     }).catch(err => {
                                         reject(err)
@@ -128,7 +128,7 @@ module.exports = {
                         connection.connect(client => {
                             client.db(database.databaseName).collection(collection.CART_COLLECTION)
                                 .insertOne(documentObj).then((doc) => {
-                                    resolve("user doesnot exist")
+                                    resolve(doc)
                                     client.close()
                                 }).catch(err => {
                                     reject(err)
