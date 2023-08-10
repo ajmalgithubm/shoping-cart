@@ -23,17 +23,17 @@
                                 
                             </div>
                             <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                                <button class="btn btn-link px-2"
-                                    onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                                    <i class="fas fa-minus"></i>
+                                <button class="btn btn-outline-danger btn-sm ml-1"
+                                    onclick="changeProductQuantity('{{this.proId}}', -1)">
+                                   -
                                 </button>
 
-                                <input id="form1" min="0" name="quantity" value="{{this.quantity}}" type="number"
-                                    class="form-control form-control-sm" />
+                                <input id='{{this.proId}}'  min="1" name="quantity" value="{{this.quantity}}" type="number"
+                                    class="form-control form-control-sm text-center inputMuteShow" style="font-weight: 600;"/>
 
-                                <button class="btn btn-link px-2"
-                                    onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                                    <i class="fas fa-plus"></i>
+                                <button class="btn btn-outline-success btn-sm"
+                                   onclick="changeProductQuantity('{{this.proId}}', 1)">
+                                    +
                                 </button>
                             </div>
                             <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
@@ -47,9 +47,6 @@
                                         d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
                                 </svg>
                             </a>
-                            </div>
-                            <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
                             </div>
                         </div>
                     </div>
@@ -70,3 +67,19 @@
         </div>
     </div>
 </section>
+<style>
+    .inputMuteShow{
+        border: none;
+        font-weight: 600;
+    }
+    .inputMuteShow:hover{
+        border: none;
+        box-shadow: none;
+    }
+</style>
+
+<script>
+    const form1 = document.getElementsByClassName('inputMuteShow')[0];
+    form1.readOnly = true;
+    form1.style='none'
+</script>

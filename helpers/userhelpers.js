@@ -3,6 +3,7 @@ const connection = require('../config/connection');
 const bcrypt = require('bcrypt');
 const database = require('../config/database');
 const { ObjectId } = require('mongodb');
+const { resolve } = require('promise');
 
 
 module.exports = {
@@ -217,6 +218,7 @@ module.exports = {
             connection.connect(async client =>{
                 const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({userId:userId});
                 if(doc){
+                    client.close()
                     resolve(doc.productList.length)
                 }else{
                     resolve(null)
@@ -236,8 +238,55 @@ module.exports = {
                         }
                     }
                 });
+                client.close()
                 resolve(doc)
 
+            })
+        })
+    },
+    changeProductQuantity:(userId, proId, count)=>{
+        return new Promise((resolve, reject) => {
+            proId =new ObjectId(proId);
+            count = parseInt(count)
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).updateOne(
+                    {userId: userId},{
+                        $inc:{
+                            'productList.$[outer].quantity':count
+                        }
+                    },{
+                        arrayFilters:[
+                            {'outer.proId': proId}
+                        ]
+                    }
+                );
+                client.close()
+                resolve(doc)
+            })
+        })
+    },
+    getProductQuantity:(userId, proId)=> {
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).aggregate([
+                    {
+                        $match:{
+                            userId:userId
+                        }
+                    },{
+                        $unwind:'$productList'
+                    },{
+                        $set:{
+                            proId: '$productList.proId',
+                            quantity:'$productList.quantity'
+                        }
+                    },{
+                        $match:{
+                            proId:proId
+                        }
+                    }
+                ]).toArray()
+                resolve(doc)
             })
         })
     }

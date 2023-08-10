@@ -5,27 +5,27 @@ const userhelpers = require('../helpers/userhelpers');
 const { ObjectId } = require('mongodb');
 
 
-function userLogedIn(req, res, next){
-    if (req.session.status){
+function userLogedIn(req, res, next) {
+    if (req.session.status) {
         next()
-    }else{
+    } else {
         res.redirect('/login')
     }
 }
 
 
 
-router.get('/', async (req,res) => {
+router.get('/', async (req, res) => {
 
     const status = req.session.status;
     const userName = req.session.userName;
     var totalQuantity = null;
-    if(status){
+    if (status) {
         totalQuantity = await userhelpers.getTotalProduct(req.session.user._id)
     }
-    productHelpers.getAllProduct((products) => { 
+    productHelpers.getAllProduct((products) => {
         if (products) {
-            res.render('user/products', {  title: "Shopping cart", products, status, userName, totalQuantity});
+            res.render('user/products', { title: "Shopping cart", products, status, userName, totalQuantity });
         } else {
             res.send("<h1>Error Occur</h1>")
         }
@@ -33,27 +33,27 @@ router.get('/', async (req,res) => {
 })
 
 router.get('/login', (req, res) => {
-    if(req.session.status){
+    if (req.session.status) {
         res.redirect('/')
-    }else{
-        res.render('user/login',{error:req.session.loginError})
+    } else {
+        res.render('user/login', { error: req.session.loginError })
         req.session.loginError = false
     }
 })
 
 
 router.get('/signup', (req, res) => {
-        res.render('user/signup')
+    res.render('user/signup')
 })
 
 router.post('/login', (req, res) => {
     userhelpers.doLogin(req.body, (result) => {
-        if(result){
-            req.session.userName = result.fname+' '+result.lname;
+        if (result) {
+            req.session.userName = result.fname + ' ' + result.lname;
             req.session.status = true;
             req.session.user = result
             res.redirect('/')
-        }else{
+        } else {
             req.session.loginError = true
             res.redirect('/login')
         }
@@ -63,36 +63,36 @@ router.post('/login', (req, res) => {
 router.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/login')
-}) 
+})
 
 router.post('/signup', (req, res) => {
     userhelpers.doSignup(req.body, (result) => {
         if (result) {
             userhelpers.getUserDetails(result.insertedId.toString(), (result) => {
-                if(result){
+                if (result) {
                     req.session.status = true
-                    req.session.userName = result.fname+' '+result.lname
+                    req.session.userName = result.fname + ' ' + result.lname
                     req.session.user = result
                     res.redirect('/')
-                }else{
+                } else {
                     res.redirect('/signup')
                 }
             })
-             
+
         } else {
             res.redirect('/signup')
         }
     })
 })
 
-router.get('/add-to-cart/:id',userLogedIn ,(req, res)=>{
+router.get('/add-to-cart/:id', userLogedIn, (req, res) => {
     console.log("api call");
     const userId = req.session.user._id
-    const proId =new ObjectId(req.params.id)
+    const proId = new ObjectId(req.params.id)
     console.log(proId);
     console.log(userId);
     userhelpers.addToCart(userId, proId).then((result) => {
-        userhelpers.getTotalProduct(userId).then((quantity) =>{
+        userhelpers.getTotalProduct(userId).then((quantity) => {
             res.json(quantity)
         })
     }).catch(err => {
@@ -115,16 +115,25 @@ router.get('/cart', userLogedIn, (req, res) => {
             productArray
         })
     })
-    
-   
+
+
 })
 
-router.get('/delete-cart-product/:id',async (req, res) => {
+router.get('/delete-cart-product/:id', async (req, res) => {
     const result = await userhelpers.deleteCartItem(req.session.user._id, req.params.id)
-    if(result){
+    if (result) {
         res.redirect('/cart')
-    }else{
+    } else {
         res.redirect('/')
+    }
+})
+
+
+router.post('/change-quantity',async (req, res) => {
+    const result =await userhelpers.changeProductQuantity(req.session.user._id, req.body.proId, req.body.count);
+    if(result){
+       const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
+       res.json(doc[0].quantity)
     }
 })
 

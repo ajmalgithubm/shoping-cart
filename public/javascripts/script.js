@@ -9,3 +9,20 @@ function addToCart(proId){
         }
     })
 }
+
+function changeProductQuantity(proId, count){
+    $.ajax({
+        url:'/change-quantity',
+        data:{
+            proId:proId,
+            count:count
+        },
+        method:'post',
+        success:(quantity)=> {
+            $(`#${proId}`).val(quantity)
+        }
+    })
+}
+
+
+
