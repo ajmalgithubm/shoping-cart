@@ -244,24 +244,30 @@ module.exports = {
             })
         })
     },
-    changeProductQuantity:(userId, proId, count)=>{
+    changeProductQuantity:(userId, proId, count, currentCount)=>{
         return new Promise((resolve, reject) => {
-            proId =new ObjectId(proId);
-            count = parseInt(count)
             connection.connect(async client => {
-                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).updateOne(
-                    {userId: userId},{
-                        $inc:{
-                            'productList.$[outer].quantity':count
+                if(count === -1 && currentCount===1){
+                    client.close()
+                    resolve([{
+                        quantity:1,
+                        productBecomeZero:true
+                    }])
+                }else{
+                    const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).updateOne(
+                        { userId: userId }, {
+                        $inc: {
+                            'productList.$[outer].quantity': count
                         }
-                    },{
-                        arrayFilters:[
-                            {'outer.proId': proId}
+                    }, {
+                        arrayFilters: [
+                            { 'outer.proId': proId }
                         ]
                     }
-                );
-                client.close()
-                resolve(doc)
+                    );
+                    client.close()
+                    resolve(doc)
+                }
             })
         })
     },

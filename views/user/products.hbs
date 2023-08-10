@@ -2,7 +2,7 @@
     <div class="container mt-5">
         <div class="row">
         {{#each products}}
-            <div class="col-md-3">
+            <div class="col-md-3 ml-2">
                 <div class="card" style="width: 18rem;">
                     <img class="card-img-top" src='images/{{this._id}}.jpg' alt="Card image cap" style="width: 200px; height:200px">
                     <div class="card-body">
@@ -10,7 +10,7 @@
                         <div class="">
                             <h5 class="">${{this.price}}</h5>
                         </div>
-                        <a onclick="addToCart('{{this._id}}')" class="btn btn-primary">add cart</a>
+                        <a onclick="addToCart('{{this._id}}')" class="btn btn-info mt-2" style="font-weight: 500;color:white">Add cart</a>
                     </div>
                 </div>
             </div>

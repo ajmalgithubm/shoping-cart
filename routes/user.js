@@ -130,12 +130,18 @@ router.get('/delete-cart-product/:id', async (req, res) => {
 
 
 router.post('/change-quantity',async (req, res) => {
-    const result =await userhelpers.changeProductQuantity(req.session.user._id, req.body.proId, req.body.count);
-    if(result){
-       const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
-       res.json(doc[0].quantity)
+    const result = await userhelpers.changeProductQuantity(req.session.user._id, new ObjectId(req.body.proId), parseInt(req.body.count), parseInt(req.body.currentCount));
+    if(result.productBecomeZero){
+        console.log("product become zero is called");
+        res.json({quantity:1, productNonZero:true})
+    }else{
+        console.log("product no zero is called");
+        const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
+        res.json({ quantity: doc[0].quantity })
     }
-})
+    //const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
+ 
+}) 
 
 
 module.exports = router
