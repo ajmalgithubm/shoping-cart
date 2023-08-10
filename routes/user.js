@@ -120,6 +120,7 @@ router.get('/cart', userLogedIn, (req, res) => {
 })
 
 router.get('/delete-cart-product/:id', async (req, res) => {
+    console.log("delete product request recived at server");
     const result = await userhelpers.deleteCartItem(req.session.user._id, req.params.id)
     if (result) {
         res.redirect('/cart')
@@ -131,14 +132,17 @@ router.get('/delete-cart-product/:id', async (req, res) => {
 
 router.post('/change-quantity',async (req, res) => {
     const result = await userhelpers.changeProductQuantity(req.session.user._id, new ObjectId(req.body.proId), parseInt(req.body.count), parseInt(req.body.currentCount));
-    if(result.productBecomeZero){
-        console.log("product become zero is called");
-        res.json({quantity:1, productNonZero:true})
-    }else{
-        console.log("product no zero is called");
-        const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
-        res.json({ quantity: doc[0].quantity })
-    }
+    const totalPrice = await userhelpers.totalProductPrice(req.session.user._id, new ObjectId(req.body.proId))
+    const productQuantity = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
+    res.json({totalPrice:totalPrice, quantity:productQuantity[0].quantity })
+    // if(result.productBecomeZero){
+    //     console.log("product become zero is called");
+    //     res.json({quantity:1, productNonZero:true, totalPrice:doc})
+    // }else{
+    //     console.log("product no zero is called");
+    //     const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
+    //     res.json({ quantity: doc[0].quantity, totalPrice:doc })
+    // }
     //const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
  
 }) 

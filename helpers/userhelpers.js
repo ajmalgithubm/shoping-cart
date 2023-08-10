@@ -290,10 +290,74 @@ module.exports = {
                         $match:{
                             proId:proId
                         }
+                    },{
+                        $unwind:'$productList'
                     }
                 ]).toArray()
                 resolve(doc)
             })
+        })
+    },
+    totalProductPrice:(userId, proId)=>{
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).aggregate([
+                    {
+                        $match: {
+                            userId: userId
+                        }
+                    }, {
+                        $unwind: '$productList'
+                    }, {
+                        $set: {
+                            quantity: '$productList.quantity',
+                            proId: '$productList.proId'
+                        }
+                    }, {
+                        $project: {
+
+                            productList: 0,
+
+                        }
+                    }, {
+                        $lookup: {
+                            from: 'product',
+                            localField: 'proId',
+                            foreignField: '_id',
+                            as: 'productDetails'
+                        }
+                    }, {
+                        $unwind: '$productDetails'
+                    }, {
+                        $set: {
+                            name: '$productDetails.name',
+                            price: '$productDetails.price'
+                        }
+                    }, {
+                        $project: {
+                            productDetails: 0
+                        }
+                    }, {
+                        $set: {
+                            price: {
+                                $toInt: '$price'
+                            }
+                        }
+                    }, {
+                        $set: {
+                            totalPrice: {
+                                $multiply: ['$price', '$quantity']
+                            }
+                        }
+                    },{
+                        $match:{
+                            proId:proId
+                        }
+                    }
+                ]).toArray()
+                resolve(doc[0].totalPrice)
+            })
+             
         })
     }
 }
