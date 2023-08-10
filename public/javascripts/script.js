@@ -47,9 +47,9 @@ function changeProductQuantity(proId, count) {
                 console.log(response.totalPrice);
             } else {
                 $(`#increment${proId}`).show();
-                $(`#${proId}`).val(response.quantity);
+                $(`#${proId}`).val(response.quantity); 
                 $(`#totalPrice${proId}`).html('$' + formatNumber(response.totalPrice));
-                $('#totalCartPrice').html(formatNumber(response.totalCartAmount))
+                $('#totalCartPrice').html(formatNumber(response.totalCartAmount));
                 console.log(response.totalPrice);
             }
 

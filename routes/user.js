@@ -101,10 +101,17 @@ router.get('/add-to-cart/:id', userLogedIn, (req, res) => {
 })
 
 
-router.get('/cart', userLogedIn, (req, res) => {
+router.get('/cart', userLogedIn, async(req, res) => {
     const status = req.session.status
     const userName = req.session.userName
     const userId = req.session.user
+    const totalCartAmount = await userhelpers.totalCartAmount(userId._id);
+    let totalCartPrice = 0;
+    if(!(totalCartAmount.length === 0)){
+        totalCartPrice = totalCartAmount[0].totalCartPrice;
+    }
+    totalCartPrice = formatNum(totalCartPrice)
+    console.log('Total',totalCartAmount);
     // res.render('user/cart', {status, userName, userId})
     userhelpers.getCartItems(req.session.user._id).then((productArray) => {
         console.log(productArray);
@@ -112,10 +119,11 @@ router.get('/cart', userLogedIn, (req, res) => {
             status,
             userName,
             userId,
-            productArray
+            productArray,
+            totalCartPrice
         })
     })
-
+ 
 
 })
 
@@ -136,7 +144,7 @@ router.post('/change-quantity',async (req, res) => {
     const productQuantity = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
     const totalCartAmount = await userhelpers.totalCartAmount(req.session.user._id);
     console.log(totalCartAmount);
-    res.json({totalPrice:totalPrice, quantity:productQuantity[0].quantity , totalCartAmount:totalCartAmount})
+    res.json({totalPrice:totalPrice, quantity:productQuantity[0].quantity , totalCartAmount:totalCartAmount[0].totalCartPrice})
     // if(result.productBecomeZero){
     //     console.log("product become zero is called");
     //     res.json({quantity:1, productNonZero:true, totalPrice:doc})
@@ -148,6 +156,8 @@ router.post('/change-quantity',async (req, res) => {
     //const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
  
 }) 
-
+function formatNum(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 module.exports = router

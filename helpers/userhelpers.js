@@ -420,7 +420,7 @@ module.exports = {
                         }
                     }
                 ]).toArray()
-                resolve(doc[0].totalCartPrice)
+                resolve(doc)
             })
         })
     }
