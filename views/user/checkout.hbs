@@ -239,7 +239,21 @@
         let paymentOption = cod.checked ? 'COD' : (onlinePayment.checked ? 'ONLINE PAYMENT' : false)
         if (allInputValidation && paymentOption) {
             // go to server to store orders in database
-            console.log("all value are true");
+            $.ajax({
+                url:'/make-purchase',
+                method:'post',
+                data:{
+                    firstName : firstName.value,
+                    lastName: lastName.value,
+                    email:email.value,
+                    address: address.value,
+                    phoneNumber: phoneNumber.value,
+                    payment:paymentOption
+                },
+                success: (response) =>{
+                    console.log(response)
+                }
+            })
 
         } else {
             // find the location where error occur

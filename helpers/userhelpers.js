@@ -59,6 +59,7 @@ module.exports = {
     },
     addToCart: (userId, proId) => {
         return new Promise((resolve, reject) => {
+            console.log("add to cart function is called");
             connection.connect(client => {
                 client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId }).then((user) => {
                     if (user) {
@@ -441,5 +442,23 @@ module.exports = {
                 }
             })
         })
+    },
+    getCartProducts:(userId) =>{
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId });
+                if (doc) {
+                    resolve(doc.productList)
+                }
+            })
+        })
+    },
+    placeOrder:(userId, data)=> {
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const user =await client.db(database.databaseName).collection(collection.ORDER_COLLECTION).findOne({userId:userId})
+            })
+        })
     }
+
 }

@@ -177,8 +177,20 @@ router.get('/check-out',userLogedIn,async (req, res) => {
     })
 })
 
-router.get('/make-purchase', (req, res) =>{
-    res.send("Purchased")
+router.post('/make-purchase',userLogedIn,async (req, res) =>{
+    let deliveryDetails = req.body;
+    const productList = await userhelpers.getCartProducts(req.session.user._id);
+    const totalAmount = await userhelpers.totalCartAmount(req.session.user._id);
+    console.log('cart array product', totalAmount[0].totalCartPrice);
+    const orderObj = {
+        deliveryDetails:req.body,
+        productList:productList,
+        totalAmount:totalAmount[0].totalCartPrice,
+        userId:req.session.user._id,
+        date:new Date()
+    }
+    
+    console.log(orderObj)
 })
 router.get('/check-cart-item-exist', userLogedIn,(req, res) => {
     //console.log('req.params.id', req.params.id);
