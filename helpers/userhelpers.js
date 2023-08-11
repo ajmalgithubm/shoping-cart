@@ -3,7 +3,6 @@ const connection = require('../config/connection');
 const bcrypt = require('bcrypt');
 const database = require('../config/database');
 const { ObjectId } = require('mongodb');
-const { resolve } = require('promise');
 
 
 module.exports = {
@@ -190,6 +189,12 @@ module.exports = {
                             totalPrice:{
                                 $multiply:['$price', '$quantity']
                             }
+                        }
+                    },{
+                        $set:{
+                            proIdString:{
+                                $toString:'$proId'
+                            }                      
                         }
                     }
                 ];

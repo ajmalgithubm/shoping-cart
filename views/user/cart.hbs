@@ -11,8 +11,8 @@
                     </div>
                 </div>
                 {{#each productArray}}
-                <div class="card rounded-3 mb-4">
-                    <div class="card-body p-4" id='productDiv{{thid.proId}}'>
+                <div class="card rounded-3 mb-4" id='productDiv{{this.proIdString}}'>
+                    <div class="card-body p-4">
                         <div class="row d-flex justify-content-between align-items-center">
                             <div class="col-md-2 col-lg-2 col-xl-2">
                                 <img src="/images/{{this.proId}}.jpg"
@@ -41,7 +41,7 @@
                             </div>
                             <div class="">
                                 <!--href="/delete-cart-product/{{this.proId}}"-->
-                            <a class="btn text-white" style="background-color: #dd4b39;"  href="/delete-cart-product/{{this.proId}}"  role="button">
+                            <a class="btn text-white" style="background-color: #dd4b39;"  onclick="deleteProduct('{{this.proId}}')"  role="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill"
                                     viewBox="0 0 16 16">
                                     <path
@@ -49,21 +49,18 @@
                                 </svg>
                             </a>
                             </div>
-                        </div>
+                        </div> 
                     </div>
                 </div>
                 {{/each}}
-
-               
-
-               
+ 
 
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title text-center">Total amount : $ <span id="totalCartPrice">{{totalCartPrice}}</span></h3>
                     </div>
                     <div class="card-body">
-                        <button type="button" class="btn btn-warning btn-block btn-lg">Checkout</button>
+                        <a href="/check-out" id="check-out-link"><button type="button" class="btn btn-warning btn-block btn-lg">Checkout</button></a>
                     </div>
                 </div>
 
@@ -80,8 +77,12 @@
         border: none;
         box-shadow: none;
     }
+    #check-out-link{
+        text-decoration: none;
+        color: rgb(0, 0, 0);
+    }
 </style>
-
+ 
 <script>
     const form1 = document.getElementsByClassName('inputMuteShow')[0];
     form1.readOnly = true;

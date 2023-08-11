@@ -111,10 +111,10 @@ router.get('/cart', userLogedIn, async(req, res) => {
         totalCartPrice = totalCartAmount[0].totalCartPrice;
     }
     totalCartPrice = formatNum(totalCartPrice)
-    console.log('Total',totalCartAmount);
+   // console.log('Total',totalCartAmount);
     // res.render('user/cart', {status, userName, userId})
     userhelpers.getCartItems(req.session.user._id).then((productArray) => {
-        console.log(productArray);
+        console.log('cartitem is',productArray);
         res.render('user/cart', {
             status,
             userName,
@@ -129,11 +129,17 @@ router.get('/cart', userLogedIn, async(req, res) => {
 
 router.get('/delete-cart-product/:id', async (req, res) => {
     console.log("delete product request recived at server");
-    const result = await userhelpers.deleteCartItem(req.session.user._id, req.params.id)
+    const result = await userhelpers.deleteCartItem(req.session.user._id, req.params.id);
+    const totalCartAmount = await userhelpers.totalCartAmount(req.session.user._id);
+    let totalCartPrice = 0;
+    if(totalCartAmount.length === 1){
+        totalCartPrice = totalCartAmount[0].totalCartPrice
+    }
+    console.log(totalCartAmount)
     if (result) {
-        res.redirect('/cart')
+        res.json({ status: true, totalCartPrice})
     } else {
-        res.redirect('/')
+        res.json({status:false}) 
     }
 })
 
@@ -156,8 +162,26 @@ router.post('/change-quantity',async (req, res) => {
     //const doc = await userhelpers.getProductQuantity(req.session.user._id, new ObjectId(req.body.proId))
  
 }) 
+
+router.get('/check-out',async (req, res) => {
+    const totalCartAmount = await userhelpers.totalCartAmount(req.session.user._id);
+    var totalCartPrice = 0
+    if(totalCartAmount.length === 1){
+        totalCartPrice = totalCartAmount[0].totalCartPrice;
+        totalCartPrice = formatNum(totalCartPrice)
+    }
+    res.render('user/checkout', {
+        totalCartPrice:totalCartPrice
+    })
+})
+
+router.get('/make-purchase', (req, res) =>{
+    res.send("Purchased")
+})
+
+
 function formatNum(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-module.exports = router
+module.exports = router  

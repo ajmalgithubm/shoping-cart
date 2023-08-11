@@ -2,14 +2,14 @@ function addToCart(proId) {
     $.ajax({
         url: '/add-to-cart/' + proId,
         method: 'get',
-        success: (response) => {
+        success: (response) => {  
             if (typeof (response) === 'number') {
                 $('#cart-count').html(response)
             }
         }
     })
 }
-
+ 
 // function deleteProduct(proId){
 //     $.ajax({
 //         url:'/delete-cart-product/'+proId,
@@ -45,7 +45,7 @@ function changeProductQuantity(proId, count) {
                 $('#totalCartPrice').html(formatNumber(response.totalCartAmount))
                 //totalPrice
                 console.log(response.totalPrice);
-            } else {
+            } else { 
                 $(`#increment${proId}`).show();
                 $(`#${proId}`).val(response.quantity); 
                 $(`#totalPrice${proId}`).html('$' + formatNumber(response.totalPrice));
@@ -53,6 +53,24 @@ function changeProductQuantity(proId, count) {
                 console.log(response.totalPrice);
             }
 
+        }
+    })
+}
+
+function deleteProduct(proId){
+    $.ajax({
+        url:'/delete-cart-product/'+proId,
+        method:'get',
+        success:(response)=> { 
+            // response from server give here
+            console.log(response);
+            if(response){
+                if(response.status){
+                    const productDiv = document.getElementById(`productDiv${proId}`);
+                    productDiv.style.display = 'none';
+                    $('#totalCartPrice').html(formatNumber(response.totalCartPrice));
+                }
+            } 
         }
     })
 }
