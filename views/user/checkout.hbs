@@ -56,14 +56,17 @@
                 <h5 class="mb-0">Summary</h5>
             </div>
             <div class="card-body">
+                <div class="alert alert-danger" id="alert" role="alert">
+                    Please select any payment options !!
+                </div>
                 <ul class="list-group">
                     <li class="list-group-item d-flex align-items-center border-0 px-0 pb-0">
                         <input type="radio" name="paymentMethod" id="cod" class="" value="cod"><span class="ml-2"
                             style="font-weight: 600;">COD</span>
                     </li>
                     <li class="list-group-item d-flex  align-items-center px-0">
-                        <input type="radio" name="paymentMethod" id="onlinePayment" value="onlinePayment"><span class="ml-2"
-                            style="font-weight: 600;">ONLINE PAYMENT</span>
+                        <input type="radio" name="paymentMethod" id="onlinePayment" value="onlinePayment"><span
+                            class="ml-2" style="font-weight: 600;">ONLINE PAYMENT</span>
                     </li>
                     <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
                         <div>
@@ -97,11 +100,17 @@
     #phoneAlert {
         display: none;
     }
-    #emailAlert{
+
+    #emailAlert {
         display: none;
     }
-    .form-control{
+
+    .form-control {
         box-shadow: 0px 0 2px rgb(75, 74, 74);
+    }
+
+    #alert {
+        display: none;
     }
 </style>
 
@@ -120,25 +129,38 @@
     const addressAlert = document.getElementById('addressAlert')
     const phoneAlert = document.getElementById('phoneAlert')
     const emailAlert = document.getElementById('emailAlert')
-
+    const alert = document.getElementById('alert')
+    // each array loctions
+    var eachInputArray = [{ id: fname, alert: fnameAlert }, { id: lastName, alert: lnameAlert }, { id: email, alert: emailAlert }, { id: address, alert: addressAlert }, { id: phoneNumber, alert: phoneAlert }]
     // action for when focus the input
-    function onFocus(id, alertId){
+    function onFocus(id, alertId) {
         alertId.style.display = 'none';
         id.style.boxShadow = 'none'
         id.style.border = "2px solid blue";
     }
     // when blur input values are true
-    function onblurSuccess(id){
+    function onblurSuccess(id) {
         id.style.border = '';
         id.style.boxShadow = 'none';
     }
     //onblur failure
-    function onblurFailure(id, alertId){
+    function onblurFailure(id, alertId) {
         id.style.boxShadow = '0 0 5px red';
         id.style.border = 'none'
         alertId.style.display = 'block';
     }
-
+    // click button payment option chang
+    function changeAlert() {
+        document.getElementById('alert').style.display = 'none'
+    }
+    // when click cod radio button
+    cod.addEventListener('click', function () {
+        changeAlert()
+    });
+    // when click the online payment button
+    onlinePayment.addEventListener('click', function () {
+        changeAlert()
+    })
 
 
     // first name form validation
@@ -149,7 +171,7 @@
         if (firstName.value.trim() === '') {
             eachValidation[0] = false
             onblurFailure(firstName, fnameAlert)
-            
+
         } else {
             eachValidation[0] = true
             onblurSuccess(firstName)
@@ -178,70 +200,75 @@
         if (!emailIsValid(email.value)) {
             eachValidation[2] = false
             onblurFailure(email, emailAlert)
-        }else{
+        } else {
             eachValidation[2] = true
             onblurSuccess(email)
         }
-        
+
     })
     // address   validation
-    address.addEventListener('focus',function(){
+    address.addEventListener('focus', function () {
         onFocus(address, addressAlert)
     })
-    address.addEventListener('blur', function(){
-        if(address.value.trim() === ''){
+    address.addEventListener('blur', function () {
+        if (address.value.trim() === '') {
             eachValidation[3] = false
             onblurFailure(address, addressAlert)
-        }else{
+        } else {
             eachValidation[3] = true
-           onblurSuccess(address)
+            onblurSuccess(address)
         }
     })
     // phone number validation
-    phoneNumber.addEventListener('focus', function(){
+    phoneNumber.addEventListener('focus', function () {
         onFocus(phoneNumber, phoneAlert)
     })
-    phoneNumber.addEventListener('blur', function(){
-        if(phoneNumber.value.length < 10 || phoneNumber.value.length > 10){
+    phoneNumber.addEventListener('blur', function () {
+        if (phoneNumber.value.length < 10 || phoneNumber.value.length > 10) {
             eachValidation[4] = false
-           onblurFailure(phoneNumber, phoneAlert)
-        }else{
+            onblurFailure(phoneNumber, phoneAlert)
+        } else {
             eachValidation[4] = true
             onblurSuccess(phoneNumber)
         }
     })
 
     function makePurchase() {
-        console.log(eachValidation)
-        const allInputValidation = eachValidation.every(item => item === true)
-        if(allInputValidation){
-            console.log("all value are true")
-        }else{
-            console.log("all values are not true")
+
+        const allInputValidation = eachValidation.every(item => item === true);
+        let paymentOption = cod.checked ? 'COD' : (onlinePayment.checked ? 'ONLINE PAYMENT' : false)
+        if (allInputValidation && paymentOption) {
+            // go to server to store orders in database
+            console.log("all value are true");
+
+        } else {
+            // find the location where error occur
+            if(allInputValidation && !paymentOption){
+                document.getElementById('alert').style.display = 'block'
+                return
+            }else if(!allInputValidation && !paymentOption){
+                 document.getElementById('alert').style.display = 'block'
+                 showAlerts(eachValidation)
+            }else{
+                showAlerts(eachValidation)
+            }
+            console.log("Ajmal")
+            
         }
-        {{!-- const data = {
-            firstName: firstName.value,
-            lastName: lastName.value,
-            email: email.value,
-            address: address.value,
-            phoneNumber: phoneNumber.value,
-            cod: cod.checked,
-            onlinePayment: onlinePayment.checked
-        }
-        if (firstName.value.trim() === '') {
-            fnameAlert.style.display = 'block';
-            firstName.style.boxShadow = "0 0 5px red"
-            firstName.focus()
-        } if (address.value.trim() === '') {
-            addressAlert.style.display = 'block';
-            address.style.boxShadow = "0 0 5px red"
-            lastName.focus()
-        } if (phoneNumber.value.trim() === '') {
-            phoneAlert.style.display = 'block';
-            phoneNumber.style.boxShadow = "0 0 5px red"
-            phoneNumber.focus()
-        }
-        console.log(data) --}}
+    }
+
+
+
+    function showAlerts(eachValidation){
+        let indexList = [];
+        eachValidation.forEach((validate, index) => {
+            if (!validate) {
+                indexList.push(index);
+            }
+        });
+        indexList.forEach(index => {
+            onblurFailure(eachInputArray[index].id, eachInputArray[index].alert)
+        })
     }
 
     function emailIsValid(email) {
