@@ -163,7 +163,7 @@ router.post('/change-quantity',async (req, res) => {
  
 }) 
 
-router.get('/check-out',async (req, res) => {
+router.get('/check-out',userLogedIn,async (req, res) => {
     const totalCartAmount = await userhelpers.totalCartAmount(req.session.user._id);
     var totalCartPrice = 0
     if(totalCartAmount.length === 1){
@@ -171,12 +171,20 @@ router.get('/check-out',async (req, res) => {
         totalCartPrice = formatNum(totalCartPrice)
     }
     res.render('user/checkout', {
-        totalCartPrice:totalCartPrice
+        totalCartPrice:totalCartPrice,
+        status:req.session.status,
+        userName:req.session.userName
     })
 })
 
 router.get('/make-purchase', (req, res) =>{
     res.send("Purchased")
+})
+router.get('/check-cart-item-exist', userLogedIn,(req, res) => {
+    //console.log('req.params.id', req.params.id);
+    userhelpers.productExistInCart(req.session.user._id).then((response) => {
+        res.json(response)
+    })
 })
 
 

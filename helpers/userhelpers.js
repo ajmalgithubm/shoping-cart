@@ -428,5 +428,18 @@ module.exports = {
                 resolve(doc)
             })
         })
+    },
+    productExistInCart:(userId) => {
+        return new Promise((resolve, reject) => {
+            console.log("user id is", userId);
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId })
+                if(doc.productList.length === 0){
+                    resolve(false)
+                }else{
+                    resolve(true)
+                }
+            })
+        })
     }
 }

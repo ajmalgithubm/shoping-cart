@@ -74,6 +74,21 @@ function deleteProduct(proId){
         }
     })
 }
+function checkout(){
+  
+    $.ajax({
+        url:'/check-cart-item-exist',
+        method:'get',
+        success:(response) => {
+            if(response){
+                location.href = '/check-out'
+            }else{
+                alert('Please select the product')
+                location.href = '/'
+            }
+        }
+    })
+}
 
 function formatNumber(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
