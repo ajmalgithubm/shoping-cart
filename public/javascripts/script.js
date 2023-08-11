@@ -37,7 +37,7 @@ function changeProductQuantity(proId, count) {
         method: 'post',
         success: (response) => {
             console.log(response);
-
+ 
             if (response.quantity == 1) {
                 $(`#increment${proId}`).hide();
                 $(`#${proId}`).val(response.quantity);
