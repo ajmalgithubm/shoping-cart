@@ -435,7 +435,7 @@ module.exports = {
             console.log("user id is", userId);
             connection.connect(async client => {
                 const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).findOne({ userId: userId })
-                if(doc.productList.length === 0){
+                if(!doc){
                     resolve(false)
                 }else{
                     resolve(true)
@@ -457,6 +457,65 @@ module.exports = {
         return new Promise((resolve, reject) => {
             connection.connect(async client => {
                 const user =await client.db(database.databaseName).collection(collection.ORDER_COLLECTION).findOne({userId:userId})
+                const doc = await client.db(database.databaseName).collection(collection.ORDER_COLLECTION).insertOne({
+                    userId: userId,
+                    orders: data
+                });
+                resolve(doc)
+            })
+        })
+    },
+    deleteCollection :(userId) => {
+        console.log('ID', userId);
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.CART_COLLECTION).deleteOne({userId:userId});
+                client.close()
+                resolve(doc)
+            })
+        })
+    },
+    getOrderList:(userId) => {
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+               const order = await client.db(database.databaseName).collection(collection.ORDER_COLLECTION).find({userId:userId}).toArray()
+               client.close()
+               console.log("orders is", order[0]);
+               resolve(order)
+            })
+        })
+    },
+    getOrderProduct: (orderId) => {
+        return new Promise((resolve, reject) => {
+            connection.connect(async client => {
+                const doc = await client.db(database.databaseName).collection(collection.ORDER_COLLECTION).aggregate([
+                    {
+                        $match: {
+                            _id: new ObjectId(orderId),
+                        }
+                    },{
+                        $unwind:'$orders.productList'
+                    },{
+                        $set:{
+                            proId:'$orders.productList.proId',
+                            quantity:'$orders.productList.quantity'
+                        }
+                    },{
+                        $lookup:{
+                            from:'product',
+                            localField:'proId',
+                            foreignField:'_id',
+                            as:'productDetails'
+                        }
+                    },{
+                        $unwind:'$productDetails'
+                    },{
+                        $project:{
+                            orders:0
+                        }
+                    }
+                ]).toArray()
+                resolve(doc)
             })
         })
     }

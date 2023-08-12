@@ -251,7 +251,12 @@
                     payment:paymentOption
                 },
                 success: (response) =>{
-                    console.log(response)
+                    if(response.status){
+                        // to success fully
+                        location.href = '/order-success'
+                    }else{
+                        // pending online paymnet
+                    }
                 }
             })
 

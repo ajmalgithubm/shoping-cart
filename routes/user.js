@@ -178,25 +178,53 @@ router.get('/check-out',userLogedIn,async (req, res) => {
 })
 
 router.post('/make-purchase',userLogedIn,async (req, res) =>{
-    let deliveryDetails = req.body;
     const productList = await userhelpers.getCartProducts(req.session.user._id);
     const totalAmount = await userhelpers.totalCartAmount(req.session.user._id);
+    let status="PENDING";
+    if(req.body.payment === "COD"){
+        status = 'PLACED'
+    }
     console.log('cart array product', totalAmount[0].totalCartPrice);
     const orderObj = {
         deliveryDetails:req.body,
         productList:productList,
         totalAmount:totalAmount[0].totalCartPrice,
         userId:req.session.user._id,
-        date:new Date()
+        date:new Date(),
+        status:status
     }
-    
-    console.log(orderObj)
+    console.log('user Id is', req.body);
+    // place the order in order collections
+    const placeOrder = await userhelpers.placeOrder(req.session.user._id, orderObj);
+    const deleteCollection = await userhelpers.deleteCollection(req.session.user._id);
+    if(deleteCollection && placeOrder){
+        if(req.body.payment === 'COD'){
+            res.json({status:true})
+        }else{
+            res.json({status: false})
+        }
+    }
 })
 router.get('/check-cart-item-exist', userLogedIn,(req, res) => {
     //console.log('req.params.id', req.params.id);
     userhelpers.productExistInCart(req.session.user._id).then((response) => {
         res.json(response)
     })
+})
+
+router.get('/order-success', userLogedIn, (req, res) => {
+    res.render('user/orderSuccess', {status:req.session.status, userName: req.session.userName})
+}) 
+router.get('/orders', userLogedIn,async (req, res) => {
+    const orderList = await userhelpers.getOrderList(req.session.user._id);
+    console.log('Order List is', orderList)
+    res.render('user/orderList', { status: req.session.status, userName: req.session.userName, orderList})
+})
+
+router.get('/view-order-product/:id',async (req, res) => {
+   const productList = await userhelpers.getOrderProduct(req.params.id);
+   console.log("Ordered product is ",productList);
+    res.render('user/orderProduct', { status: req.session.status, userName: req.session.userName , productList})
 })
 
 
