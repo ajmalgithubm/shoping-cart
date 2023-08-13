@@ -201,6 +201,7 @@ router.post('/make-purchase',userLogedIn,async (req, res) =>{
         if(req.body.payment === 'COD'){
             res.json({status:true})
         }else{
+            
             res.json({status: false})
         }
     }
